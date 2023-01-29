@@ -1,0 +1,62 @@
+version: "3.8"
+services:
+  postgres_source:
+    image: rueian/postgres:11-logical
+    container_name: "postgres_source"
+    ports:
+      - "5432:5432"
+    command: ["postgres", "-c", "config_file=/pgc/postgresql.conf", "-c","hba_file=/pgc/pg_hba.conf"]
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./postgres:/pgc
+  postgres_sink:
+    image: rueian/postgres:11-logical
+    container_name: "postgres_sink"
+    ports:
+      - "5433:5432"
+    command: [ "postgres", "-c", "config_file=/pgc/postgresql.conf", "-c","hba_file=/pgc/pg_hba.conf" ]
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./postgres:/pgc
+  pulsar:
+    image: apachepulsar/pulsar:2.7.1
+    container_name: pulsar
+    command: ["bin/pulsar", "standalone"]
+    ports:
+      - 6650:6650
+      - 8080:8080
+  pg2pulsar:
+    image: rueian/pgcapture:59098ee
+    container_name: "pg2pulsar"
+    command: [ "pg2pulsar", "--PGConnURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable", "--PGReplURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable&replication=database", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
+
+  pulsar2pg:
+    image: rueian/pgcapture:59098ee
+    container_name: "pulsar2pg"
+    command: [ "pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres" ]
+
+  gateway:
+    image: kenny/pgcapture
+    container_name: "gateway"
+    ports:
+      - 10001:10001
+    command: gateway --ControllerAddr=controller:10000 --ResolverConfig='{"postgres_cdc":{"PulsarURL":"pulsar://pulsar:6650","PulsarTopic":"persistent://public/pgcapture/postgres","PulsarSubscription":"postgres_cdc","AgentURL":"agent:10000"}}'
+
+  controller:
+    image: kenny/pgcapture
+    container_name: "controller"
+    command: [ "controller" ]
+    ports:
+      - 10000:10000
+
+  agent:
+    image: pgcapture
+    container_name: "agent"
+    command: [ "agent" ]
+
+  configure:
+    image: kenny/pgcapture
+    container_name: configure
+    command: ["configure", "--AgentAddr=agent:10000", "--AgentCommand=pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
