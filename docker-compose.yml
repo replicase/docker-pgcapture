@@ -38,25 +38,25 @@ services:
     command: [ "pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres" ]
 
   gateway:
-    image: kenny/pgcapture
+    image: rueian/pgcapture:59098ee
     container_name: "gateway"
     ports:
       - 10001:10001
     command: gateway --ControllerAddr=controller:10000 --ResolverConfig='{"postgres_cdc":{"PulsarURL":"pulsar://pulsar:6650","PulsarTopic":"persistent://public/pgcapture/postgres","PulsarSubscription":"postgres_cdc","AgentURL":"agent:10000"}}'
 
   controller:
-    image: kenny/pgcapture
+    image: rueian/pgcapture:59098ee
     container_name: "controller"
     command: [ "controller" ]
     ports:
       - 10000:10000
 
   agent:
-    image: pgcapture
+    image: rueian/pgcapture:59098ee
     container_name: "agent"
     command: [ "agent" ]
 
   configure:
-    image: kenny/pgcapture
+    image: rueian/pgcapture:59098ee
     container_name: configure
     command: ["configure", "--AgentAddr=agent:10000", "--AgentCommand=pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
