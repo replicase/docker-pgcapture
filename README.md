@@ -26,4 +26,7 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
 3. run scheduler to dump change to consumer
    ```bash
    go run scheduler/main.go
-   ```
+   ``` 
+
+## How to change Postgres image version
+You can use [Dockerfile](postgres/Dockerfile) to custom your postgres version with pglogcial and pgcapture extensions.
