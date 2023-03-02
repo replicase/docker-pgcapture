@@ -11,6 +11,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./postgres:/pgc
+
   postgres_sink:
     image: "kennychenfight/postgres:11-logical"
     container_name: "postgres_sink"
@@ -21,6 +22,7 @@ services:
       POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - ./postgres:/pgc
+
   pulsar:
     image: apachepulsar/pulsar:2.7.1
     container_name: pulsar
@@ -28,6 +30,20 @@ services:
     ports:
       - 6650:6650
       - 8080:8080
+
+  pulsar-ui:
+    image: apachepulsar/pulsar-manager:v0.2.0
+    container_name: pulsar-ui
+    ports:
+      - 9527:9527
+      - 7750:7750
+    depends_on:
+      - pulsar
+    environment:
+      SPRING_CONFIGURATION_FILE: /pulsar-manager/pulsar-manager/application.properties
+    volumes:
+      - ./pulsar/application.properties:/pulsar-manager/pulsar-manager/application.properties
+
   pg2pulsar:
     image: rueian/pgcapture:59098ee
     container_name: "pg2pulsar"
