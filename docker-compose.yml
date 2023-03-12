@@ -77,3 +77,26 @@ services:
     image: rueian/pgcapture:59098ee
     container_name: configure
     command: ["configure", "--AgentAddr=agent:10000", "--AgentCommand=pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
+
+  wait-demo-consumer-deps:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - pulsar
+      - pulsar-ui
+      - postgres_source
+      - postgres_sink
+      - controller
+      - gateway
+    command: ["pulsar:8080", "pulsar:6650", "pulsar-ui:9527", "pulsar-ui:7750", "postgres_source:5432", "postgres_sink:5432", "controller:10000", "gateway:10001"]
+
+  wait-demo-scheduler-deps:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      - pulsar
+      - pulsar-ui
+      - postgres_source
+      - postgres_sink
+      - agent
+      - controller
+      - gateway
+    command: [ "pulsar:8080", "pulsar:6650", "pulsar-ui:9527", "pulsar-ui:7750", "postgres_source:5432", "postgres_sink:5432", "agent:10000", "controller:10000", "gateway:10001"]
