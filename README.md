@@ -4,7 +4,7 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
 
 ## Demo cdc consumer
 1. ```bash
-   # build pgcapture image if you do not have pgcapture image in your local.
+   # build pgcapture image if you do not have pgcapture image in your local environment.
    ./pgcapture/dockerbuild.sh
    ./demo-consumer.sh
    go run consumer/main.go
@@ -17,7 +17,8 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
 
 ## Demo cdc consumer with scheduler
 1. ```bash
-   # build pgcapture image if you do not have pgcapture image in your local.
+   # build pgcapture image if you do not have pgcapture image in your local environment.
+   ./pgcapture/dockerbuild.sh
    ./demo-scheduler.sh
    go run consumer/main.go
    ```
@@ -35,5 +36,5 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
 You can use [Dockerfile](postgres/Dockerfile) to custom your postgres version with pglogcial and pgcapture extensions.
 
 ## How to change pgcapture image version
-
-You can use [dockerbuild.sh](pgcapture/dockerbuild.sh) to custom your pgcapture version. Currently, the default pgcapture version is v0.0.40.
+You can use [dockerbuild.sh](pgcapture/dockerbuild.sh) to custom your pgcapture version and change it in [docker-compose.yml](docker-compose.yml).
+Currently, the default pgcapture version is v0.0.40.
