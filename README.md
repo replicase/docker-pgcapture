@@ -7,7 +7,7 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
    ./demo-consumer.sh
    go run consumer/main.go
    ```
-2. connect localhost:5432 postgres and run
+2. connect localhost:5432 postgres and create users table and insert data
    ```sql
    create table users (id int primary key, name text not null);
    insert into users(id, name) values (1, 'kenny'); 
@@ -18,7 +18,7 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
    ./demo-scheduler.sh
    go run consumer/main.go
    ```
-2. connect localhost:5432 postgres and run
+2. connect localhost:5432 postgres and create users table and insert data
    ```sql
    create table users (id int primary key, name text not null);
    insert into users(id, name) values (1, 'kenny'); 

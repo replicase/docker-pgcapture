@@ -1,7 +1,7 @@
 #!/bin/bash
 
-docker-compose up -d --build --force-recreate pulsar pulsar-ui
-sleep 15
+docker-compose run --rm wait-demo-consumer-deps
+
 docker exec pulsar sh -c "bin/pulsar-admin namespaces create public/pgcapture; bin/pulsar-admin topics create persistent://public/pgcapture/postgres"
 # consumer would auto create subscription, you do not need manual create subscription
 # docker exec pulsar sh -c "bin/pulsar-admin topics create-subscription --subscription postgres_cdc persistent://public/pgcapture/postgres"
@@ -14,8 +14,4 @@ curl \
     -X PUT http://localhost:9527/pulsar-manager/users/superuser \
     -d '{"name": "admin", "password": "apachepulsar", "description": "test", "email": "username@test.org"}'
 
-docker-compose up -d --build --force-recreate postgres_source postgres_sink
-sleep 10
-
-docker-compose up -d --build --force-recreate pg2pulsar pulsar2pg gateway
-sleep 5
+docker-compose up -d --build --force-recreate pg2pulsar pulsar2pg
