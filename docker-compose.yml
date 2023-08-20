@@ -1,8 +1,10 @@
 version: "3.8"
 services:
   postgres_source:
-    build: postgres
-    image: "kennychenfight/postgres:11-logical"
+    build:
+      context: postgres
+      dockerfile: ${PG_VERSION}/Dockerfile
+    image: "kennychenfight/postgres:${PG_VERSION}-logical"
     container_name: "postgres_source"
     ports:
       - "5432:5432"
@@ -13,7 +15,10 @@ services:
       - ./postgres:/pgc
 
   postgres_sink:
-    image: "kennychenfight/postgres:11-logical"
+    build:
+      context: postgres
+      dockerfile: ${PG_VERSION}/Dockerfile
+    image: "kennychenfight/postgres:${PG_VERSION}-logical"
     container_name: "postgres_sink"
     ports:
       - "5433:5432"
@@ -28,8 +33,8 @@ services:
     container_name: pulsar
     command: ["bin/pulsar", "standalone"]
     ports:
-      - 6650:6650
-      - 8080:8080
+      - "6650:6650"
+      - "8080:8080"
 
   pulsar-ui:
     image: apachepulsar/pulsar-manager:v0.2.0
@@ -45,36 +50,42 @@ services:
       - ./pulsar/application.properties:/pulsar-manager/pulsar-manager/application.properties
 
   pg2pulsar:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: "pg2pulsar"
-    command: [ "pg2pulsar", "--PGConnURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable", "--PGReplURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable&replication=database", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
+    command:
+     - "pg2pulsar"
+     - "--PGConnURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable"
+     - "--PGReplURL=postgres://postgres@postgres_source:5432/postgres?sslmode=disable&replication=database"
+     - "--PulsarURL=pulsar://pulsar:6650"
+     - "--PulsarTopic=persistent://public/pgcapture/postgres"
+     - "--DecodePlugin=$DECODE_PLUGIN"
 
   pulsar2pg:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: "pulsar2pg"
     command: [ "pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres" ]
 
   gateway:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: "gateway"
     ports:
       - 10001:10001
     command: gateway --ControllerAddr=controller:10000 --ResolverConfig='{"postgres_cdc":{"PulsarURL":"pulsar://pulsar:6650","PulsarTopic":"persistent://public/pgcapture/postgres","PulsarSubscription":"postgres_cdc","AgentURL":"agent:10000"}}'
 
   controller:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: "controller"
     command: [ "controller" ]
     ports:
       - 10000:10000
 
   agent:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: "agent"
     command: [ "agent" ]
 
   configure:
-    image: rueian/pgcapture:v0.0.40
+    image: rueian/pgcapture:latest
     container_name: configure
     command: ["configure", "--AgentAddr=agent:10000", "--AgentCommand=pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
 

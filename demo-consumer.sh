@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export PG_VERSION=${PG_VERSION:-14}
+export DECODE_PLUGIN=${DECODE_PLUGIN:-pgoutput}
+
 docker-compose run --rm wait-demo-consumer-deps
 
 docker exec pulsar sh -c "bin/pulsar-admin namespaces create public/pgcapture; bin/pulsar-admin topics create persistent://public/pgcapture/postgres"
