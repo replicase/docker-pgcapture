@@ -29,7 +29,7 @@ services:
       - ./postgres:/pgc
 
   pulsar:
-    image: apachepulsar/pulsar:2.7.1
+    image: apachepulsar/pulsar:2.10.4
     container_name: pulsar
     command: ["bin/pulsar", "standalone"]
     ports:
@@ -40,8 +40,8 @@ services:
     image: apachepulsar/pulsar-manager:v0.2.0
     container_name: pulsar-ui
     ports:
-      - 9527:9527
-      - 7750:7750
+      - "9527:9527"
+      - "7750:7750"
     depends_on:
       - pulsar
     environment:
