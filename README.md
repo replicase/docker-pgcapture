@@ -14,24 +14,24 @@ Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker 
    ```
 2. connect localhost:5432 postgres and create users table and insert data
    ```sql
-   create table users (id int primary key, name text not null);
-   insert into users(id, name) values (1, 'kenny'); 
+   create table users (id int primary key, name text not null, uid uuid not null, info jsonb not null, addresses text[] not null);
+   insert into users(id, name, uid, info) values (1, 'kenny', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
    ```
 
 ## Demo cdc consumer and scheduler dump
 1. ```bash
    # build pgcapture image if you do not have pgcapture image in your local environment.
-   ./pgcapture/dockerbuild.sh
+   (cd pgcapture && ./dockerbuild.sh) && \
    # default postgres version is 14 and decode plugin is pgoutput
    # you can specify postgres version and decode plugin by setting environment variables
    # example: POSTGRES_VERSION=11 DECODE_PLUGIN=pglogical_output ./demo-consumer.sh
-   ./demo-scheduler.sh
+   ./demo-scheduler.sh && \
    go run consumer/main.go
    ```
 2. connect localhost:5432 postgres and create users table and insert data
    ```sql
-   create table users (id int primary key, name text not null);
-   insert into users(id, name) values (1, 'kenny'); 
+   create table users (id int primary key, name text not null, uid uuid not null, info jsonb not null, addresses text[] not null);
+   insert into users(id, name, uid, info) values (1, 'kenny', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
    ```
 3. run scheduler to dump change to consumer
    ```bash

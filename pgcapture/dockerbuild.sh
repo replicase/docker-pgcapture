@@ -1,4 +1,4 @@
-VERSION=${1:-v0.0.52}
+VERSION=${1:-v0.0.54}
 PLATFORM=${2:-linux/amd64}
 
 git clone --depth 1 --branch "$VERSION" https://github.com/rueian/pgcapture

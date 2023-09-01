@@ -37,7 +37,7 @@ services:
       - "8080:8080"
 
   pulsar-ui:
-    image: apachepulsar/pulsar-manager:v0.2.0
+    image: apachepulsar/pulsar-manager:v0.4.0
     container_name: pulsar-ui
     ports:
       - "9527:9527"
@@ -93,12 +93,12 @@ services:
     image: dadarek/wait-for-dependencies
     depends_on:
       - pulsar
-      - pulsar-ui
+#      - pulsar-ui
       - postgres_source
       - postgres_sink
       - controller
       - gateway
-    command: ["pulsar:8080", "pulsar:6650", "pulsar-ui:9527", "pulsar-ui:7750", "postgres_source:5432", "postgres_sink:5432", "controller:10000", "gateway:10001"]
+    command: ["pulsar:8080", "pulsar:6650", "postgres_source:5432", "postgres_sink:5432", "controller:10000", "gateway:10001"]
 
   wait-demo-scheduler-deps:
     image: dadarek/wait-for-dependencies
