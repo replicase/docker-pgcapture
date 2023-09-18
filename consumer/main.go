@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 	pgtypeV4 "github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/rueian/pgcapture/pkg/pgcapture"
+	"github.com/replicase/pgcapture/pkg/pgcapture"
 	"google.golang.org/grpc"
 )
 
@@ -49,8 +49,10 @@ func main() {
 
 	err = consumer.Consume(map[pgcapture.Model]pgcapture.ModelHandlerFunc{
 		&User{}: func(change pgcapture.Change) error {
-			u := change.New.(*User)
-			fmt.Printf("id: %d, name: %s, uid: %s, info: %v addresses: %v\n", u.ID.Int32, u.Name.String, u.Uid, u.Info, u.Addresses)
+			nu := change.New.(*User)
+			ou := change.Old.(*User)
+			fmt.Printf("id: %d, name: %s, uid: %s, info: %v addresses: %v\n", nu.ID.Int32, nu.Name.String, nu.Uid, nu.Info, nu.Addresses)
+			fmt.Printf("id: %d, name: %s, uid: %s, info: %v addresses: %v\n", ou.ID.Int32, ou.Name.String, ou.Uid, ou.Info, ou.Addresses)
 			return nil
 		},
 	})

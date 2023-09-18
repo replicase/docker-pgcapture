@@ -1,6 +1,6 @@
 # docker-pgcapture
 
-Demo [pgcapture](https://github.com/rueian/pgcapture) amazing library by docker !
+Demo [pgcapture](https://github.com/replicase/pgcapture) amazing library by docker !
 
 ## Demo cdc consumer
 1. ```bash
