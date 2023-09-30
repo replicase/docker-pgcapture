@@ -44,4 +44,4 @@ You can use [postgres folder](postgres) to custom your postgres version with pgl
 ## How to change pgcapture image version
 You can use [dockerbuild.sh](pgcapture/dockerbuild.sh) to custom your pgcapture version and change it in [docker-compose.yml](docker-compose.yml).
 Since the pgcapture is still in development and is not stable, I recommend you always use the latest version of pgcapture.
-Currently, the default pgcapture version is v0.0.52.
+Currently, the default pgcapture version is v0.0.56.
