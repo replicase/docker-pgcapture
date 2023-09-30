@@ -50,7 +50,7 @@ services:
       - ./pulsar/application.properties:/pulsar-manager/pulsar-manager/application.properties
 
   pg2pulsar:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: "pg2pulsar"
     command:
      - "pg2pulsar"
@@ -61,31 +61,31 @@ services:
      - "--DecodePlugin=$DECODE_PLUGIN"
 
   pulsar2pg:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: "pulsar2pg"
     command: [ "pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres" ]
 
   gateway:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: "gateway"
     ports:
       - 10001:10001
     command: gateway --ControllerAddr=controller:10000 --ResolverConfig='{"postgres_cdc":{"PulsarURL":"pulsar://pulsar:6650","PulsarTopic":"persistent://public/pgcapture/postgres","PulsarSubscription":"postgres_cdc","AgentURL":"agent:10000"}}'
 
   controller:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: "controller"
     command: [ "controller" ]
     ports:
       - 10000:10000
 
   agent:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: "agent"
     command: [ "agent" ]
 
   configure:
-    image: rueian/pgcapture:latest
+    image: replicase/pgcapture:latest
     container_name: configure
     command: ["configure", "--AgentAddr=agent:10000", "--AgentCommand=pulsar2pg", "--PGConnURL=postgres://postgres@postgres_sink:5432/postgres?sslmode=disable", "--PulsarURL=pulsar://pulsar:6650", "--PulsarTopic=persistent://public/pgcapture/postgres"]
 
@@ -104,10 +104,10 @@ services:
     image: dadarek/wait-for-dependencies
     depends_on:
       - pulsar
-      - pulsar-ui
+#      - pulsar-ui
       - postgres_source
       - postgres_sink
       - agent
       - controller
       - gateway
-    command: [ "pulsar:8080", "pulsar:6650", "pulsar-ui:9527", "pulsar-ui:7750", "postgres_source:5432", "postgres_sink:5432", "agent:10000", "controller:10000", "gateway:10001"]
+    command: [ "pulsar:8080", "pulsar:6650", "postgres_source:5432", "postgres_sink:5432", "agent:10000", "controller:10000", "gateway:10001"]
