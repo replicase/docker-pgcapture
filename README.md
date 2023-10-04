@@ -1,47 +1,56 @@
 # docker-pgcapture
 
-Demo [pgcapture](https://github.com/replicase/pgcapture) amazing library by docker !
+It's a guidance to setup [pgcapture](https://github.com/replicase/pgcapture) environment by docker.
 
-## Demo cdc consumer
-1. ```bash
-   # build pgcapture image if you do not have pgcapture image in your local environment.
-   (cd pgcapture && ./dockerbuild.sh) && \
+## Build pgcapture image
+Build pgcapture image if you do not have pgcapture image in your local environment.
+And you can change the pgcapture version in [dockerbuild.sh](pgcapture/dockerbuild.sh).
+```bash
+  (cd pgcapture && ./dockerbuild.sh)
+```
+
+## Demo CDC Consumer
+1. Run the script
+   ```bash
    # default postgres version is 14 and decode plugin is pgoutput
    # you can specify postgres version and decode plugin by setting environment variables
    # example: POSTGRES_VERSION=11 DECODE_PLUGIN=pglogical_output ./demo-consumer.sh
-   ./demo-consumer.sh && \
+   ./demo-consumer.sh
+   ```
+2. Run the consumer
+   ```bash
    go run consumer/main.go
    ```
-2. connect localhost:5432 postgres and create users table and insert data
+3. Connect localhost:5432 postgres and create users table and insert data
    ```sql
    create table users (id int primary key, name text not null, uid uuid not null, info jsonb not null, addresses text[] not null);
-   insert into users(id, name, uid, info) values (1, 'kenny', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
+   insert into users(id, name, uid, info) values (1, 'foo', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
    ```
+4. See the consumer output from postgres source change
 
-## Demo cdc consumer and scheduler dump
-1. ```bash
-   # build pgcapture image if you do not have pgcapture image in your local environment.
-   (cd pgcapture && ./dockerbuild.sh) && \
+## Demo CDC Consumer and Scheduler Dump
+1. Run the script
+   ```bash
    # default postgres version is 14 and decode plugin is pgoutput
    # you can specify postgres version and decode plugin by setting environment variables
-   # example: POSTGRES_VERSION=11 DECODE_PLUGIN=pglogical_output ./demo-consumer.sh
-   ./demo-scheduler.sh && \
-   go run consumer/main.go
+   # example: POSTGRES_VERSION=11 DECODE_PLUGIN=pglogical_output ./demo-scheduler.sh
+   ./demo-scheduler.sh
    ```
-2. connect localhost:5432 postgres and create users table and insert data
+2. Run the consumer
+    ```bash
+    go run consumer/main.go
+    ```
+3. Connect localhost:5432 postgres and create users table and insert data
    ```sql
    create table users (id int primary key, name text not null, uid uuid not null, info jsonb not null, addresses text[] not null);
-   insert into users(id, name, uid, info) values (1, 'kenny', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
+   insert into users(id, name, uid, info) values (1, 'foo', 'bc03d615-8afb-452d-b0cc-340087def732', '{"myAge": 18}', '{"taipei", "hsinchu"}'); 
    ```
-3. run scheduler to dump change to consumer
+4. See the consumer output from postgres source change
+5. Run scheduler to dump change to consumer
    ```bash
    go run scheduler/main.go
    ```
+6. See the consumer output from scheduler dump change 
 
 ## How to change Postgres image version
 You can use [postgres folder](postgres) to custom your postgres version with pglogcial and pgcapture extensions.
-
-## How to change pgcapture image version
-You can use [dockerbuild.sh](pgcapture/dockerbuild.sh) to custom your pgcapture version and change it in [docker-compose.yml](docker-compose.yml).
-Since the pgcapture is still in development and is not stable, I recommend you always use the latest version of pgcapture.
-Currently, the default pgcapture version is v0.0.56.
