@@ -4,7 +4,7 @@ services:
     build:
       context: postgres
       dockerfile: ${PG_VERSION}/Dockerfile
-    image: "kennychenfight/postgres:${PG_VERSION}-logical"
+    image: "replicase/postgres:${PG_VERSION}-logical"
     container_name: "postgres_source"
     ports:
       - "5432:5432"
@@ -18,7 +18,7 @@ services:
     build:
       context: postgres
       dockerfile: ${PG_VERSION}/Dockerfile
-    image: "kennychenfight/postgres:${PG_VERSION}-logical"
+    image: "replicase/postgres:${PG_VERSION}-logical"
     container_name: "postgres_sink"
     ports:
       - "5433:5432"
