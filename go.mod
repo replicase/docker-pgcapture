@@ -1,4 +1,4 @@
-module github.com/KennyChenFight/docker-pgcapture
+module github.com/replicase/docker-pgcapture
 
 go 1.20
 
