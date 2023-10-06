@@ -5,22 +5,22 @@ RUN apt update && \
     wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
     echo "deb http://apt.postgresql.org/pub/repos/apt bionic-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
     apt update && \
-    apt install -y postgresql-server-dev-14 build-essential libssl-dev libkrb5-dev zlib1g-dev libedit-dev libxml2-dev libxslt-dev libselinux-dev libpam-dev patch
+    apt install -y postgresql-server-dev-14 build-essential libssl-dev libkrb5-dev zlib1g-dev libedit-dev libxml2-dev libxslt-dev libselinux-dev libpam-dev liblz4-dev patch
 
 RUN wget https://github.com/2ndQuadrant/pglogical/archive/REL2_4_2.tar.gz && \
-    wget https://github.com/replicase/pgcapture/archive/v0.0.22.tar.gz && \
-    tar -zxvf REL2_3_4_no_filter.tar.gz && \
-    tar -zxvf v0.0.22.tar.gz
+    wget https://github.com/replicase/pgcapture/archive/v0.0.56.tar.gz && \
+    tar -zxvf REL2_4_2.tar.gz && \
+    tar -zxvf v0.0.56.tar.gz
 
 COPY 14/pglogical/pglogical.patch /pglogical-REL2_4_2
 
 RUN cd /pglogical-REL2_4_2 && \
     patch -p1 < pglogical.patch && \
     make && \
-    cd /pgcapture-0.0.22/hack/postgres/extension && make
+    cd /pgcapture-0.0.56/hack/postgres/extension && make
 
 RUN cd /pglogical-REL2_4_2 && make install && \
-    cd /pgcapture-0.0.22/hack/postgres/extension && make install
+    cd /pgcapture-0.0.56/hack/postgres/extension && make install
 
 FROM postgres:14
 
